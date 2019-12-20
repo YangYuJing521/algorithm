@@ -6,10 +6,6 @@ public class stack<E> {
 	//包含一个链表
 	private bidirectionalCircleLinkList<E> list = new bidirectionalCircleLinkList<E>();
 
-	public void clear() {
-		list.clear();
-	}
-
 	//对外接口
 	public int size() {
 		return list.size();
