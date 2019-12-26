@@ -3,6 +3,8 @@ package com.yyj;
 import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Queue;
+
+import com.mj.BinarySearchTree.Node;
 import com.mj.printer.BinaryTreeInfo;
 
 @SuppressWarnings("unchecked")
@@ -139,6 +141,39 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 		}
 	}
 	
+	/**
+	 * 利用层序遍历，判断是否为完全二叉树
+	 * */
+	public boolean isCompleteTree() {
+		if (root == null) return false;
+		
+		Queue<Node<E>> queue = new LinkedList<>();
+		queue.offer(root);
+		Boolean isMustBeLeaf = false;
+		
+		while (!queue.isEmpty()) {
+			Node<E> node = queue.poll();
+			
+			if (isMustBeLeaf && !node.isLeaf()) return false;
+				
+			if (node.haveTwoChildren()) {
+				//最有都有就入队迭代
+				queue.offer(node.left);
+				queue.offer(node.right);
+			}else if (node.left == null && node.right != null) {
+				//左边为空， 右边不为空不是完全二叉树
+				return false;
+			}else {
+				//(node.left!= null && node.right== null) || (node.left == null && node.right == null)
+				//如左子树不为空，并且右子树为空， 或者左子树右子树都为空, 
+				//那么他们的后续节点都为叶子节点才是完全二叉树
+				isMustBeLeaf = true;
+			}
+						
+		}
+		return true;
+	}
+	
 	public void clear() {
 		
 	}
@@ -151,6 +186,61 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 		return false;
 	}
 	
+	/**
+	 * 二叉搜索树高度  递归
+	 * */
+	public int height() {
+		return height(root, 0);
+	}
+	
+	private int height(Node<E> node, int height) {
+		if (node == null) return height;
+		height += 1;
+		int maxheight = Math.max(height(node.left, height), height(node.right, height));
+		return maxheight;
+	}
+	
+	/**
+	 * 老师写的递归
+	 * */
+	public int height2() {
+		return height(root);
+	}
+	
+	private int height(Node<E> node) {
+		if (node == null) return 0;
+		return 1 + Math.max(height(node.left), height(node.right));
+	}
+	
+	/**
+	 * 层序遍历计算高度
+	 * */
+	public int treeHeight() {
+		if (root == null) return 0;
+
+		Queue<Node<E>> queue = new LinkedList<>();
+		queue.offer(root);
+		int leverSize = 1; //第一层只有一个root
+		int height = 0; 
+		while (!queue.isEmpty()) {
+			Node<E> node = queue.poll();
+			leverSize --;
+						
+			if (node.left != null) {
+				queue.offer(node.left);
+			}
+			if (node.right != null) {
+				queue.offer(node.right);
+			}
+			//这个方法很关键
+			if (leverSize == 0) { //一层没有了，开始下一层了
+				leverSize = queue.size(); //队列里有几个元素，这一层就有多少个
+				height++;
+			}
+
+		}
+		return height;
+	}
 	
 	//如果 e1=e2返回0 e1>e2返回>0 e1<e2返回小于0
 	private int compare(E e1, E e2) {
@@ -194,6 +284,14 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 		public Node(E element, Node<E> parent) {
 			this.element = element;
 			this.parent = parent;
+		}
+		
+		public boolean haveTwoChildren() {
+			return left != null && right != null;
+		}
+		
+		public boolean isLeaf() {
+			return left == null && right == null;
 		}
 	}
 	

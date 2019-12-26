@@ -59,5 +59,10 @@ public class Main {
 				System.out.println(element);
 			}
 		});
+		
+		System.out.println("搜索树高度："+bst1.height());
+		System.out.println("搜索树高度："+bst1.treeHeight());
+		System.out.println(bst1.isCompleteTree());
+
 	}
 }
