@@ -32,6 +32,8 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 	
 	//添加元素
 	public void add(E element) {
+		elementNotNulCheck(element);
+		
 		if (root == null) { //root 节点
 			root = new Node<>(element, null);
 			size++;
@@ -68,6 +70,7 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 	
 	/**
 	 * 递归 前序遍历
+	 * 树状结构展示（打印)
 	 * */
 	public void preOrderTraversal(Visitor<E> visitor) {
 		preOrderTraversal(root, visitor);
@@ -83,6 +86,7 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 
 	/**
 	 * 递归 中序遍历
+	 * 二叉搜索树升序降序处理节点
 	 * */
 	public void inOrderTraversal(Visitor<E> visitor) {
 		inOrderTraversal(root, visitor);
@@ -97,6 +101,7 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 	
 	/**
 	 * 递归 后序遍历
+	 * 适用于一些先子后父的操作
 	 * */
 	public void postOrderTraversal(Visitor<E> visitor) {
 		postOrderTraversal(root, visitor);
@@ -111,6 +116,8 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 	
 	/**
 	 * 迭代 层序遍历
+	 * 计算二叉树的高度
+	 * 判断一颗二叉树是否是完全二叉树
 	 * */
 	public void levelOrderTraversal(Visitor<E> visitor) {
 		//存放元素
@@ -155,6 +162,30 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 		return ((Comparable<E>)e1).compareTo(e2);
 	}
 	
+	private void elementNotNulCheck(E element) {
+		if (element == null) {
+			throw new IllegalArgumentException("element should not be null");
+		}
+	}
+	
+	
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		toString(root, sb, "");
+		return sb.toString();
+	}
+	
+	/**
+	 * 利用前序遍历打印二叉树
+	 * */
+	private void toString(Node<E> node, StringBuffer sb, String prefix) {
+		if (node == null) return;
+		sb.append(prefix).append(node.element).append("\n");
+		toString(node.left, sb, prefix+"L--");
+		toString(node.right, sb, prefix+"R--");
+	}
+	
 	private static class Node<E> {
 		E element;
 		Node<E> left;
@@ -166,11 +197,15 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 		}
 	}
 	
-	//访问器，供外部访问
+	//访问器，供外部访问遍历结果
 	public static interface Visitor<E> {
 		void visit(E element);
 	}
 
+	
+	/**
+	 * 打印相关
+	 * */
 	@Override
 	public Object root() {
 		// TODO Auto-generated method stub

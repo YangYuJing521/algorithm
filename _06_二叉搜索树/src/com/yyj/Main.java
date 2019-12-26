@@ -33,12 +33,17 @@ public class Main {
 		for (int i = 0; i < data.length; i++) {
 			bst2.add(data[i]);
 		}
+		//第三方打印二叉树
 		BinaryTrees.println(bst1);
-		BinaryTrees.println(bst2);
+//		BinaryTrees.println(bst2);
+		
+		//前序遍历打印二叉树
+		System.out.println(bst1);
 
 //		Visitor<E> visitor = 
 		
 //		bst1.preOrderTraversal();
+		//中序遍历 升序
 		bst1.inOrderTraversal(new Visitor<Integer>() {
 			public void visit(Integer element) {
 				System.out.println(element);
@@ -48,6 +53,7 @@ public class Main {
 //		bst1.levelOrderTraversal();
 		
 		System.out.println();
+		//中序遍历 降序
 		bst2.inOrderTraversal(new Visitor<Integer>() {
 			public void visit(Integer element) {
 				System.out.println(element);
