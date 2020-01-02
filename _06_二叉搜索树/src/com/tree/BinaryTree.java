@@ -1,19 +1,15 @@
-package com.yyj;
+package com.tree;
 
-import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.Queue;
 
-import com.mj.BinarySearchTree.Node;
 import com.mj.printer.BinaryTreeInfo;
 
 @SuppressWarnings("unchecked")
 
-public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以打印
-	
-	private int size;
-	private Node<E> root;
-	private Comparator<E> comparator; //比较器，java提供，可以提供比较规则
+public class BinaryTree<E> implements BinaryTreeInfo{
+	protected int size;
+	protected Node<E> root;
 	
 	public int size() {
 		return size;
@@ -23,52 +19,11 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 		return size == 0;
 	}
 	
-	public BinarySearchTree() {
-		this(null);
+	public void clear() {
+		root = null;
+		size = 0;
 	}
 	
-	public BinarySearchTree(Comparator<E> comparator) {
-		this.comparator = comparator;
-	}
-	
-	
-	//添加元素
-	public void add(E element) {
-		elementNotNulCheck(element);
-		
-		if (root == null) { //root 节点
-			root = new Node<>(element, null);
-			size++;
-			return;
-		}
-		
-		//找到目标节点，并保存新节点比目标节点的大小
-		Node<E> tmp = root;
-		Node<E> parent = root; //保存节点
-		int cmp = 0;  //比较结果
-		while (tmp != null) {
-			parent = tmp;
-			cmp = compare(element, tmp.element);
-			if (cmp>0) {//肯定是往右边加
-				tmp = tmp.right;
-			}else if (cmp<0) {
-				tmp = tmp.left;
-			}else {
-				//相等，就覆盖
-				tmp.element = element;
-				return;
-			}
-		}
-		
-		//目标位置添加
-		Node<E> newNode = new Node<>(element, parent);
-		if (cmp > 0) {
-			parent.right = newNode;
-		}else {
-			parent.left = newNode;
-		}
-		size++;
-	}
 	
 	/**
 	 * 递归 前序遍历
@@ -80,7 +35,6 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 	
 	private void preOrderTraversal(Node<E> node, Visitor<E> visitor) {
 		if (node == null || visitor == null) return;
-//		System.out.println(node.element);
 		visitor.visit(node.element);
 		preOrderTraversal(node.left, visitor);
 		preOrderTraversal(node.right, visitor);
@@ -96,7 +50,6 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 	private void inOrderTraversal(Node<E> node, Visitor<E> visitor) {
 		if (node == null || visitor == null) return;
 		inOrderTraversal(node.left, visitor);
-//		System.out.println(node.element);
 		visitor.visit(node.element);
 		inOrderTraversal(node.right, visitor);
 	}
@@ -113,7 +66,6 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 		postOrderTraversal(node.left, visitor);
 		postOrderTraversal(node.right, visitor);
 		visitor.visit(node.element);
-//		System.out.println(node.element);
 	}
 	
 	/**
@@ -129,7 +81,6 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 		while (!queue.isEmpty()) {
 			//取出并清空队列
 			Node<E> node = queue.poll(); 
-//			System.out.println(node.element);
 			visitor.visit(node.element);
 			//下一层的放入队列
 			if (node.left != null) {
@@ -174,17 +125,6 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 		return true;
 	}
 	
-	public void clear() {
-		
-	}
-	
-	public void remove(E element) {
-		
-	}
-	
-	public boolean contains(E element) {
-		return false;
-	}
 	
 	/**
 	 * 二叉搜索树高度  递归
@@ -242,45 +182,61 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 		return height;
 	}
 	
-	//如果 e1=e2返回0 e1>e2返回>0 e1<e2返回小于0
-	private int compare(E e1, E e2) {
-		//如果有比较器调用比较器的比较方法
-		if (comparator != null) {
-			return comparator.compare(e1, e2);
-		}		
-		//java.lang 系统的类型都有默认实现
-		return ((Comparable<E>)e1).compareTo(e2);
-	}
-	
-	private void elementNotNulCheck(E element) {
-		if (element == null) {
-			throw new IllegalArgumentException("element should not be null");
+	/**
+	 * 前驱节点 中序遍历的前一个节点
+	 * */
+	protected Node<E> predecessor(Node<E> node) {
+		if (node == null) return null;
+		
+		// 前驱节点在左子树当中（left.right.right.right....）
+		Node<E> tmp = node.left;
+		if (tmp != null) {
+		   while (tmp.right != null) {
+			   tmp = tmp.right;
+		   }
+		   return tmp;
 		}
-	}
-	
-	
-	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		toString(root, sb, "");
-		return sb.toString();
+		
+		//left == null parent != null
+		//终止条件 node在parent的右子树中
+		while (node.parent != null && node == node.parent.left) {
+			node = node.parent;
+		}
+		
+		//left == null parent == null
+//		if (node.parent == null) {  //没有前驱节点
+//			return node.parent;
+//		}
+		return node.parent;
 	}
 	
 	/**
-	 * 利用前序遍历打印二叉树
+	 * 后继节点 中序遍历的后一个节点
+	 * 和前驱正好相反
 	 * */
-	private void toString(Node<E> node, StringBuffer sb, String prefix) {
-		if (node == null) return;
-		sb.append(prefix).append(node.element).append("\n");
-		toString(node.left, sb, prefix+"L--");
-		toString(node.right, sb, prefix+"R--");
+	protected Node<E> successor(Node<E> node) {
+		if (node == null) return null;
+		// 前驱节点在右子树当中（right.left.left.left....）
+		Node<E> tmp = node.right;
+		if (tmp != null) {
+		   while (tmp.left != null) {
+			   tmp = tmp.left;
+		   }
+		   return tmp;
+		}
+		while (node.parent != null && node == node.parent.right) {
+			node = node.parent;
+		}
+		return node.parent;
 	}
+
+
 	
-	private static class Node<E> {
-		E element;
-		Node<E> left;
-		Node<E> right;
-		Node<E> parent;
+	protected static class Node<E> {
+		public E element;
+		public Node<E> left;
+		public Node<E> right;
+		public Node<E> parent;
 		public Node(E element, Node<E> parent) {
 			this.element = element;
 			this.parent = parent;
@@ -299,7 +255,6 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 	public static interface Visitor<E> {
 		void visit(E element);
 	}
-
 	
 	/**
 	 * 打印相关
@@ -331,6 +286,5 @@ public class BinarySearchTree<E> implements BinaryTreeInfo{ //实现这个可以
 		}
 		return myNode.element + "_p(" + parentString + ")";
 	}
-	
-	
+
 }

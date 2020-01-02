@@ -1,6 +1,5 @@
 package com.yyj;
 
-import com.mj.circle.CircleLinkedList.Node;
 
 public class bidirectionalCircleLinkList<E> extends AbstractList<E> {
 
