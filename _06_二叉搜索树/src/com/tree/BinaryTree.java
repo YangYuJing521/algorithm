@@ -95,6 +95,7 @@ public class BinaryTree<E> implements BinaryTreeInfo{
 	/**
 	 * 利用层序遍历，判断是否为完全二叉树
 	 * */
+	/*
 	public boolean isCompleteTree() {
 		if (root == null) return false;
 		
@@ -119,9 +120,44 @@ public class BinaryTree<E> implements BinaryTreeInfo{
 				//如左子树不为空，并且右子树为空， 或者左子树右子树都为空, 
 				//那么他们的后续节点都为叶子节点才是完全二叉树
 				isMustBeLeaf = true;
+				if (node.left != null) queue.offer(node.left);   //bug修复， 红黑树删除补充
 			}
 						
 		}
+		return true;
+	}
+	*/
+	
+	
+	/**
+	 * 利用层序遍历，判断是否为完全二叉树(优化版)
+	 * 思路： 涉及到层序遍历， 先把遍历写完,保证每个节点都能遍历到
+	 * */
+	public boolean isComppleteTree() {
+		if (root == null) return false;
+		Queue<Node<E>> queue = new LinkedList<>();
+		queue.offer(root);
+		boolean isMustBeLeaf = false;
+		
+		while (!queue.isEmpty()) {
+			Node<E> node = queue.poll();
+			
+			if (isMustBeLeaf && !node.isLeaf()) return false;
+			
+			if (node.left != null) {
+				queue.offer(node.left);
+			}else if (node.right != null) {//左为空，又不为空
+				return false;
+			}
+			
+			if (node.right != null) {
+				queue.offer(node.right);
+			}else {
+				//(node.left!= null && node.right== null) || (node.left == null && node.right == null)
+				isMustBeLeaf = true;
+			}
+		}
+		
 		return true;
 	}
 	

@@ -1,10 +1,7 @@
 package com.tree;
-
 import java.util.LinkedList;
 import java.util.Queue;
-
 import com.mj.printer.BinaryTreeInfo;
-import com.mj.tree.BinaryTree.Node;
 
 @SuppressWarnings("unchecked")
 
@@ -183,13 +180,17 @@ public class BinaryTree<E> implements BinaryTreeInfo{
 		return height;
 	}
 	
+	protected Node<E> createNode(E element, Node<E> parent) {
+		return new Node<>(element, parent);
+	}
+	
 	/**
 	 * 前驱节点 中序遍历的前一个节点
 	 * */
 	protected Node<E> predecessor(Node<E> node) {
 		if (node == null) return null;
 		
-		// 前驱节点在左子树当中（right.left.left.left....）
+		// 前驱节点在左子树当中（left.right.right.right....）
 		Node<E> tmp = node.left;
 		if (tmp != null) {
 		   while (tmp.right != null) {
@@ -217,7 +218,7 @@ public class BinaryTree<E> implements BinaryTreeInfo{
 	 * */
 	protected Node<E> successor(Node<E> node) {
 		if (node == null) return null;
-		// 前驱节点在右子树当中（left.right.right.right....）
+		// 前驱节点在右子树当中（right.left.left.left....）
 		Node<E> tmp = node.right;
 		if (tmp != null) {
 		   while (tmp.left != null) {
@@ -232,12 +233,6 @@ public class BinaryTree<E> implements BinaryTreeInfo{
 	}
 
 
-	/**
-	 * 提供方法 供子类创建自定义的node
-	 * */
-	protected Node<E> createNode(E element, Node<E> parent) {
-		return new Node<>(element, parent);
-	}
 	
 	protected static class Node<E> {
 		public E element;

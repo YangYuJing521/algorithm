@@ -21,8 +21,9 @@ public class BinarySearchTree<E> extends BinaryTree<E>{ //实现这个可以打�
 		elementNotNulCheck(element);
 		
 		if (root == null) { //root 节点
-			root = new Node<>(element, null);
+			root = createNode(element, null); //AVL 继承时可自定义节点
 			size++;
+			afterAdd(root);
 			return;
 		}
 		
@@ -45,19 +46,30 @@ public class BinarySearchTree<E> extends BinaryTree<E>{ //实现这个可以打�
 		}
 		
 		//目标位置添加
-		Node<E> newNode = new Node<>(element, parent);
+		Node<E> newNode = createNode(element, parent);
 		if (cmp > 0) {
 			parent.right = newNode;
 		}else {
 			parent.left = newNode;
 		}
 		size++;
+		
+		// 新添加节点之后的处理
+		afterAdd(newNode);
 	}
 		
+	/**
+	 * 添加node之后的调整
+	 * @param node 新添加的节点
+	 */
+	protected void afterAdd(Node<E> node) {}
+	
+	
 	public void remove(E element) {
 		remove(node(element));
 	}
 	
+	protected void afterRemove(Node<E> node) {}
 	
 	private void remove(Node<E> node) {
 		
@@ -81,14 +93,19 @@ public class BinarySearchTree<E> extends BinaryTree<E>{ //实现这个可以打�
 			}else {
 				node.parent.right = childNode;
 			}
+			
+			//删除之后的处理
+			afterRemove(node);
 		}else if (node.parent == null) { //叶子节点为跟节点
 			root = null;
+			afterRemove(node);
 		}else {//叶子节点
 			if (node == node.parent.left) {
 				node.parent.left = null;
 			}else {
 				node.parent.right = null;
 			}
+			afterRemove(node);
 		}
 		
 	}
